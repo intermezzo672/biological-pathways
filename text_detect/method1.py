@@ -4,15 +4,9 @@ import numpy as np
 import cv2
 import pytesseract
 import easyocr
-from filters import grayscale, binthres, otsu
-from util import draw_eocr_boxes, add_white_bg
+from util import draw_eocr_boxes, add_white_bg, grayscale, binthres, otsu
 
 # global vars
-# img_path = './Images/test.jpg'
-img_path = './Images/7.jpg'
-# img_path = './Images/lupus_pathway.png'
-# img_paths = ['./Images/6_detector_problem.png', './Images/7.jpg', '354434.jpg']
-# could potentially take this out depending
 pytesseract.pytesseract.tesseract_cmd = r'C:\Users\Kelly\AppData\Local\Programs\Tesseract-OCR\tesseract.exe'
 
 # returns bounding boxes and text predictions from EasyOCR
@@ -149,7 +143,6 @@ def check_angle(coordinates, img, slant, scale):
 def run_filter(img, filt):
     if filt == "grayscale":
         filt_img = grayscale(img)
-        
     elif filt == "binthres":
         filt_img = binthres(img)
     elif filt == "otsu":
@@ -158,28 +151,22 @@ def run_filter(img, filt):
         filt_img = img
     return filt_img
 
-def get_save_path(filt, hths, wths, slant):
-    # save_path = './output/' + "bestconf-rescale" + "_" + filt + "_" + str(hths).replace('.', '-') + "_" + str(wths).replace('.', '-') + "_" + str(slant) + '.jpg'
-    save_path = './output/img7-layeredtesseract.jpg'
-    # save_path = 
-    return save_path
+# def get_scale(image):
+#     height, width = image.shape
 
-def get_coordinates(filt, hths, wths, slant):
+def get_coordinates(img_path, filt, hths, wths, slant):
     min = 5
     scale = 2
 
     im = cv2.imread(img_path)
     im = rescale(im, scale, scale)
     filt_img = run_filter(im, filt)
-    height, width, channels = im.shape
-    print(height, width)
+    height, width, _ = im.shape
 
     eocr_pred_set = easyocr_text_pred(filt_img, min, hths, wths)
     coords_eocr = recons_eocr_coords(eocr_pred_set, width, height)
     # draw_eocr_boxes(coords_eocr, im)
 
-    final_coords = check_angle(coords_eocr, filt_img, slant, scale)
-    save_path = get_save_path(filt, hths, wths, slant)
-    
+    final_coords = check_angle(coords_eocr, filt_img, slant, scale)    
 
-    return final_coords, save_path
+    return final_coords

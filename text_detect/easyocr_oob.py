@@ -4,7 +4,7 @@ import numpy as np
 import cv2
 import pytesseract
 import easyocr
-from filters import grayscale
+from util import grayscale
 
 # global vars
 pytesseract.pytesseract.tesseract_cmd = r'C:\Users\Kelly\AppData\Local\Programs\Tesseract-OCR\tesseract.exe'
@@ -78,7 +78,7 @@ def check_angle(coordinates, slant, scale):
             word_list.append([text.strip(), np.divide(points, scale), "slanted"])
     return word_list
 
-def get_coordinates(filt, hths, wths, slant):
+def get_coordinates(img_path, filt, hths, wths, slant):
     min = 5
     scale = 2
 

@@ -57,9 +57,9 @@ def calculate_tilt_angle(coords):
     return angle_deg
 
 
-def draw_canvas(width, height, word_list, save_path):
+def draw_canvas(width, height, word_list, img_path, save_path):
 # Creating a blank canvas for us to draw the words on 
-    width, height = get_image_size(method1.img_path)
+    width, height = get_image_size(img_path)
     canvas = Image.new('RGB', (int(width), int(height)), color='white')
     draw = ImageDraw.Draw(canvas)
 
@@ -146,8 +146,8 @@ def main(method, img_path, save_path):
     slant_angles = [10]
 
     # word_list, save_path = image_process.get_coordinates(filt, hbound, wbound, slant)
-    word_list = py_file.get_coordinates("grayscale", 1, 1, 5)
-    draw_canvas(width, height, word_list, save_path)
+    word_list = py_file.get_coordinates(img_path, "grayscale", 1, 1, 5)
+    draw_canvas(width, height, word_list, img_path, save_path)
     end_time = time.time()
     print(f"Execution time: {end_time - start_time}")
 

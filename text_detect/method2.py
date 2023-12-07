@@ -5,11 +5,9 @@ import cv2
 import pytesseract
 from pytesseract import Output
 import easyocr
-from filters import grayscale, binthres, otsu
-from util import draw_eocr_boxes, add_white_bg
+from util import draw_eocr_boxes, add_white_bg, grayscale, binthres, otsu
 
 # global vars
-img_path = './Images/test.jpg'
 pytesseract.pytesseract.tesseract_cmd = r'C:\Users\Kelly\AppData\Local\Programs\Tesseract-OCR\tesseract.exe'
 
 def easyocr_text_pred(img, min, hths, wths):
@@ -136,7 +134,7 @@ def run_filter(img, filt):
         filt_img = img
     return filt_img
 
-def get_coordinates(filt, hths, wths, slant):    
+def get_coordinates(img_path, filt, hths, wths, slant):    
     im = cv2.imread(img_path)
     im = rescale(im, 2, 2)
 
