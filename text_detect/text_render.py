@@ -1,11 +1,10 @@
 from PIL import Image, ImageDraw, ImageFont
 import numpy as np
-import easyocr_oob
-import method1
-import method2
+import easyocr_oob, method1, method2
 import math
 import cv2
 import time
+import sys
 # Setting font 
 font_path = 'C:\Windows\Fonts\himalaya.ttf'
 # Color: black
@@ -130,7 +129,7 @@ def draw_canvas(width, height, word_list, save_path):
     canvas.save(save_path)
     canvas.show()
 
-def main(method):
+def main(method, img_path, save_path):
     if method == "easyocr":
         py_file = easyocr_oob
     # elif method == "tesseract":
@@ -140,19 +139,17 @@ def main(method):
         py_file = method1
 
     start_time = time.time()
-    image_path = py_file.img_path
-    # image_path = method3.img_path
-    width, height = get_image_size(image_path)
+    width, height = get_image_size(img_path)
 
     filters = ["grayscale"]
     boundbox = [1]
     slant_angles = [10]
 
     # word_list, save_path = image_process.get_coordinates(filt, hbound, wbound, slant)
-    word_list, save_path = py_file.get_coordinates("grayscale", 1, 1, 5)
+    word_list = py_file.get_coordinates("grayscale", 1, 1, 5)
     draw_canvas(width, height, word_list, save_path)
     end_time = time.time()
     print(f"Execution time: {end_time - start_time}")
 
 if __name__ == "__main__":
-    main("method1")
+    main(sys.argv[1], sys.argv[2], sys.argv[3])

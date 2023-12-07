@@ -7,7 +7,6 @@ import easyocr
 from filters import grayscale
 
 # global vars
-img_path = './Images/test.jpg'
 pytesseract.pytesseract.tesseract_cmd = r'C:\Users\Kelly\AppData\Local\Programs\Tesseract-OCR\tesseract.exe'
 
 # returns bounding boxes and text predictions from EasyOCR
