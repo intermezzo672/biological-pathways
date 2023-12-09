@@ -3,7 +3,6 @@ import cv2
 # grayscale filter
 def grayscale(img):
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    cv2.imwrite("./output/grayscale_test.jpg", img)
     return img
 
 # binary threshold filter
@@ -37,7 +36,7 @@ def intersection(l1s, l1i, l2s, l2i):
 
 
 def draw_eocr_boxes(coordinates, img):
-    for text, coord in coordinates:
+    for coord in coordinates:
         (topleft, topright, bottomright, bottomleft) = coord
         tl_x,tl_y = (int(topleft[0]), int(topleft[1]))
         tr_x, tr_y = (int (topright[0]), int(topright[1]))

@@ -125,7 +125,6 @@ def check_angle(coordinates, img, slant, height, width):
 def run_filter(img, filt):
     if filt == "grayscale":
         filt_img = grayscale(img)
-        
     elif filt == "binthres":
         filt_img = binthres(img)
     elif filt == "otsu":

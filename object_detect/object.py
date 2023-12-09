@@ -59,8 +59,6 @@ def sobel_edges(img_path):
     grad = cv2.addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0)
     
     cv2.imwrite('./output/sobel-edges.jpg', grad)
-    # cv2.imshow(window_name, grad)
-    # cv2.waitKey(0)
 
 def canny_edges(img_path):
     image = cv2.imread(img_path) 
@@ -81,58 +79,6 @@ def tophat_edges(img_path):
     lines = dip.PathOpening(lines, length=100, polarity='opening', mode={'robust'})
     lines = dip.Threshold(lines, method='otsu')[0]
     dip.viewer.ShowModal(lines)
-    # dip.ImageWriteJPEG(lines, './output/tophatfilter-edges.jpg')
-    # print(lines)
-    # dip.Show("test", lines)
-    # cv2.waitKey(0)
-
-    # cv2.imshow("Edge map", edged) 
-    # cv2.waitKey(0)
-
-    # kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(9,9))
-    # dilated = cv2.dilate(img, kernel)
-    # eroded=cv2.erode(dilated,kernel)
-    # cv2.imshow("eroded", eroded)
-    # cv2.waitKey(0)
-    # cnts, _ = cv2.findContours(eroded.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    # print(cnts)
-    # for c in cnts:
-    #     peri = cv2.arcLength(c, True)
-    #     approx = cv2.approxPolyDP(c, 0.3 * peri, True)
-    #     cv2.drawContours(img, [cnts[0]], -1, (0, 255, 0), 2)
-    # cv2.imshow("test", img)
-    # cv2.waitKey(0)
-  
-    # Finding Contours 
-    # Use a copy of the image e.g. edged.copy() 
-    # since findContours alters the image 
-    # contours, hierarchy = cv2.findContours(edged,  
-    #     cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE) 
-    # cv2.imshow('Canny Edges After Contouring', edged) 
-    # cv2.waitKey(0) 
-  
-    # print("Number of Contours found = " + str(len(contours))) 
-    
-    # Draw all contours 
-    # -1 signifies drawing all contours 
-    # im_test = np.zeros((6666, 3364, 1), np.uint8)
-    # cv2.drawContours(image, contours, -1, (0, 255, 0), 3) 
-    
-    # imS = cv2.resize(image, (960, 540)) 
-    # cv2.imshow('Contours', imS) 
-    # cv2.waitKey(0) 
-    # cv2.destroyAllWindows() 
-    
-    # im2 = np.zeros((10000, 10000, 1), np.uint8)
-    # for contour in contours:
-    #     cv2.drawContours(im2,[contour], 0, (255, 255, 255),3)
-    
-    # imS = cv2.resize(im2, (1000, 1000)) 
-    # cv2.imwrite("test_edge.jpg", imS)
-    # cv2.imshow('Test Contour', imS) 
-    # cv2.waitKey(0) 
-    # print(contour)
-
 
 def main():
     img_path = './Images/test.jpg'
@@ -140,7 +86,7 @@ def main():
     # binarize(gs_img)
     # sobel_edges(img_path)
     # canny_edges(img_path)
-    tophat_edges(img_path)
+    # tophat_edges(img_path)
     return
 
 if __name__ == "__main__":
