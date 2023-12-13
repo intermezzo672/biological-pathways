@@ -154,10 +154,4 @@ def main(method, img_path, save_path):
     print(f"Execution time: {end_time - start_time}")
 
 if __name__ == "__main__":
-    # main(sys.argv[1], sys.argv[2], sys.argv[3])
-    image_path = "C:\\Users\\Kelly\\OneDrive - Yale University\\Fall2023\\CPSC490\\Foundational Code\\Images\\test.jpg"
-    main("method2", image_path, "C:\\Users\\Kelly\\OneDrive - Yale University\\Fall2023\\CPSC490\\Foundational Code\\output\\method2-changes.jpg")
-    # main("method1", image_path, "C:\\Users\\Kelly\\OneDrive - Yale University\\Fall2023\\CPSC490\\Foundational Code\\output\\method1-test-color.jpg")
-    # main("method1", image_path, "C:\\Users\\Kelly\\OneDrive - Yale University\\Fall2023\\CPSC490\\Foundational Code\\output\\method1-test-defaultbb.jpg")
-    # main("method1", image_path, "C:\\Users\\Kelly\\OneDrive - Yale University\\Fall2023\\CPSC490\\Foundational Code\\output\\method1-test-1bb.jpg")
-    # main("method1", image_path, "C:\\Users\\Kelly\\OneDrive - Yale University\\Fall2023\\CPSC490\\Foundational Code\\output\\method1-test-2bb.jpg")
+    main(sys.argv[1], sys.argv[2], sys.argv[3])

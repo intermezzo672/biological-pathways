@@ -50,7 +50,7 @@ def draw_ocr_boxes(coordinates, img):
         cv2.line(img, (tl_x,tl_y), (bl_x,bl_y), (0, 0, 255), 2)
         cv2.line(img, (bl_x,bl_y), (br_x,br_y), (0, 0, 255), 2)
         
-    cv2.imwrite("C:\\Users\\Kelly\\OneDrive - Yale University\\Fall2023\\CPSC490\\Foundational Code\\output\\kerasocr-bbonly.jpg", img)
+    cv2.imwrite("./output.jpg", img)
 
 def add_white_bg(img, border):
     return cv2.copyMakeBorder(img, border, border, 
