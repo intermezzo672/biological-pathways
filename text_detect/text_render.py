@@ -1,6 +1,6 @@
 from PIL import Image, ImageDraw, ImageFont
 import numpy as np
-import easyocr_oob, method1, method2
+import kerasocr_oob, easyocr_oob, method1, method2
 import math
 import cv2
 import time
@@ -130,7 +130,9 @@ def draw_canvas(width, height, word_list, img_path, save_path):
     canvas.show()
 
 def main(method, img_path, save_path):
-    if method == "easyocr":
+    if method == "kerasocr":
+        py_file = kerasocr_oob
+    elif method == "easyocr":
         py_file = easyocr_oob
     # elif method == "tesseract":
     elif method == "method2":
@@ -152,4 +154,10 @@ def main(method, img_path, save_path):
     print(f"Execution time: {end_time - start_time}")
 
 if __name__ == "__main__":
-    main(sys.argv[1], sys.argv[2], sys.argv[3])
+    # main(sys.argv[1], sys.argv[2], sys.argv[3])
+    image_path = "C:\\Users\\Kelly\\OneDrive - Yale University\\Fall2023\\CPSC490\\Foundational Code\\Images\\test.jpg"
+    main("method2", image_path, "C:\\Users\\Kelly\\OneDrive - Yale University\\Fall2023\\CPSC490\\Foundational Code\\output\\method2-changes.jpg")
+    # main("method1", image_path, "C:\\Users\\Kelly\\OneDrive - Yale University\\Fall2023\\CPSC490\\Foundational Code\\output\\method1-test-color.jpg")
+    # main("method1", image_path, "C:\\Users\\Kelly\\OneDrive - Yale University\\Fall2023\\CPSC490\\Foundational Code\\output\\method1-test-defaultbb.jpg")
+    # main("method1", image_path, "C:\\Users\\Kelly\\OneDrive - Yale University\\Fall2023\\CPSC490\\Foundational Code\\output\\method1-test-1bb.jpg")
+    # main("method1", image_path, "C:\\Users\\Kelly\\OneDrive - Yale University\\Fall2023\\CPSC490\\Foundational Code\\output\\method1-test-2bb.jpg")

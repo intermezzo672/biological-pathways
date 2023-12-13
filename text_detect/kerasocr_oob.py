@@ -1,27 +1,43 @@
 # importing relevant libraries
-import matplotlib.pyplot as plt
 import numpy as np
+import keras_ocr
 import cv2
 import pytesseract
-import easyocr
 from util import grayscale, rescale
 
-# returns bounding boxes and text predictions from EasyOCR
-def easyocr_text_pred(img):
-    reader = easyocr.Reader(['en'])
-    coords = reader.readtext(img)
-    return coords
+# could potentially take this out depending
+pytesseract.pytesseract.tesseract_cmd = r'C:\Users\Kelly\AppData\Local\Programs\Tesseract-OCR\tesseract.exe'
+
+def draw_kocr_boxes(coordinates, img):
+    for text, coord in coordinates:
+        (topleft, topright, bottomright, bottomleft) = coord
+        tl_x,tl_y = (int(topleft[0]), int(topleft[1]))
+        tr_x, tr_y = (int (topright[0]), int(topright[1]))
+        bl_x,bl_y = (int(bottomleft[0]), int(bottomleft[1]))
+        br_x,br_y = (int(bottomright[0]), int(bottomright[1]))
+        cv2.line(img, (tl_x,tl_y), (tr_x,tr_y), (0, 0, 255), 2)
+        cv2.line(img, (tr_x,tr_y), (br_x,br_y), (0, 0, 255), 2)
+        cv2.line(img, (tl_x,tl_y), (bl_x,bl_y), (0, 0, 255), 2)
+        cv2.line(img, (bl_x,bl_y), (br_x,br_y), (0, 0, 255), 2)
+        
+    cv2.imwrite("C:\\Users\\Kelly\\OneDrive - Yale University\\Fall2023\\CPSC490\\Foundational Code\\output\\kerasocr-bbonly.jpg", img)
+
+def kerasocr_text_pred(img_path):
+    pipeline = keras_ocr.pipeline.Pipeline()
+    img = keras_ocr.tools.read(img_path)
+    height, width, channels = img.shape 
+    prediction_groups = pipeline.recognize([img])
+    return prediction_groups[0], height, width, channels, img
 
 def check_bounds(coord, bound):
     return max(0, min(int(coord), bound))
 
-# reshapes easyocr predictions into set format
+# reshapes kerasocr predictions into set format
 # ensure coordinates do not exceed the height and width of image
-def recons_eocr_coords(coordinates, width, height):
+def recons_kocr_coords(coordinates, width, height):
     reconstruct = []
-    for point in coordinates:
-        coords, text, _ = point
-        reconstruct.append((text, np.array([[check_bounds(coord[0], width), 
+    for word, coords in coordinates: 
+        reconstruct.append((word, np.array([[check_bounds(coord[0], width), 
                      check_bounds(coord[1], height)] 
                     for coord in coords], dtype=int)))
     return reconstruct
@@ -61,27 +77,22 @@ def order_points(rectangle_coords):
         rectangle_coords = rectangle_coords[index:] + rectangle_coords[:index]
     return rectangle_coords
 
-def check_angle(coordinates, slant, scale):
+def check_angle(coordinates, slant):
     word_list = []
     for text, box in coordinates:
         if abs(box[0][0] - box[3][0]) < slant:
-            word_list.append([text.strip(), box/scale, "not slanted"])
+            word_list.append([text.strip(), box, "not slanted"])
 
         else:
             points = order_points(box)
-            word_list.append([text.strip(), np.divide(points, scale), "slanted"])
+            word_list.append([text.strip(), points, "slanted"])
     return word_list
 
 def get_coordinates(img_path, filt, hths, wths, slant):
-    scale = 2
     im = cv2.imread(img_path)
-    im = rescale(im, scale, scale)
-    filt_img = grayscale(im)
-    height, width, _ = im.shape
-
-    eocr_pred_set = easyocr_text_pred(filt_img)
-    coords_eocr = recons_eocr_coords(eocr_pred_set, width, height)
-
-    final_coords = check_angle(coords_eocr, slant, scale)
+    kocr_pred_set, height, width, _, _ = kerasocr_text_pred(img_path)
+    coords_kocr = recons_kocr_coords(kocr_pred_set, width, height)
+    draw_kocr_boxes(coords_kocr, im)
+    final_coords = check_angle(coords_kocr, slant)
 
     return final_coords

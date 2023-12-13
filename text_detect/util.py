@@ -11,6 +11,7 @@ def binthres(img):
     img = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
     return img[1]
 
+# otsu method of thresholding
 def otsu(img):
     img = grayscale(img)
     img = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
@@ -34,8 +35,10 @@ def intersection(l1s, l1i, l2s, l2i):
     y = l1s * x + l1i
     return [x, y]
 
+def rescale(img, fx, fy):
+    return cv2.resize(img, None, fx=fx, fy=fy, interpolation = cv2.INTER_CUBIC)
 
-def draw_eocr_boxes(coordinates, img):
+def draw_ocr_boxes(coordinates, img):
     for coord in coordinates:
         (topleft, topright, bottomright, bottomleft) = coord
         tl_x,tl_y = (int(topleft[0]), int(topleft[1]))
@@ -47,10 +50,7 @@ def draw_eocr_boxes(coordinates, img):
         cv2.line(img, (tl_x,tl_y), (bl_x,bl_y), (0, 0, 255), 2)
         cv2.line(img, (bl_x,bl_y), (br_x,br_y), (0, 0, 255), 2)
         
-    cv2.imwrite("./output/boundbox_test_ocr.jpg", img)
-    cv2.imshow("test", img)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    cv2.imwrite("C:\\Users\\Kelly\\OneDrive - Yale University\\Fall2023\\CPSC490\\Foundational Code\\output\\kerasocr-bbonly.jpg", img)
 
 def add_white_bg(img, border):
     return cv2.copyMakeBorder(img, border, border, 

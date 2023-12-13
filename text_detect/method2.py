@@ -5,14 +5,14 @@ import cv2
 import pytesseract
 from pytesseract import Output
 import easyocr
-from util import draw_eocr_boxes, add_white_bg, grayscale, binthres, otsu
+from util import draw_ocr_boxes, add_white_bg, grayscale, binthres, otsu
 
 # global vars
 pytesseract.pytesseract.tesseract_cmd = r'C:\Users\Kelly\AppData\Local\Programs\Tesseract-OCR\tesseract.exe'
 
-def easyocr_text_pred(img, min, hths, wths):
+def easyocr_text_pred(img, hths, wths):
     reader = easyocr.Reader(['en'])
-    coords = reader.readtext(img, min_size=min, rotation_info=[90], height_ths=hths, width_ths=wths)
+    coords = reader.readtext(img, height_ths=hths, width_ths=wths)
     return coords
 
 def check_bounds(coord, bound):
@@ -83,12 +83,12 @@ def check_angle(coordinates, img, slant, height, width):
     reader = easyocr.Reader(['en'])
     for box in coordinates:
         if abs(box[0][0] - box[3][0]) < slant:
-            roi = img[max(0, int(box[0][1] * 0.99)):min(height, int(box[2][1] * 1.01)), int(box[0][0]):int(box[1][0])]
+            roi = img[max(0, int(box[0][1])):min(height, int(box[2][1])), int(box[0][0]):int(box[1][0])]
             custom_config = r'--oem 1 --psm 7 -c preserve_interword_spaces=1'
-
-            d = pytesseract.image_to_data(roi, output_type=Output.DICT)
+            border_im = add_white_bg(roi, 100)
+            d = pytesseract.image_to_data(border_im, output_type=Output.DICT)
             (x, y, w, h) = (d['left'][0], d['top'][0], d['width'][0], d['height'][0])
-            new_roi = roi[y:y+h, x:x+w] 
+            new_roi = border_im[y:y+h, x:x+w] 
             coords = reader.readtext(new_roi, height_ths=1, width_ths=1)
             
             if coords:
@@ -106,12 +106,12 @@ def check_angle(coordinates, img, slant, height, width):
             transformation_matrix = cv2.getPerspectiveTransform(corners, rectified_corners)
             
             warp_roi = cv2.warpPerspective(img, transformation_matrix, (roi_width, roi_height))
+            border_im = add_white_bg(warp_roi, 100)
 
             # Apply OCR on the adjusted ROI
             custom_config = r'--oem 1 --psm 7 -c preserve_interword_spaces=1'
-            results = pytesseract.image_to_data(warp_roi, config=custom_config, output_type=pytesseract.Output.DICT)
+            results = pytesseract.image_to_data(border_im, config=custom_config, output_type=pytesseract.Output.DICT)
             # results4 = pytesseract.image_to_data(warp_inv_thresh, config=custom_config, output_type=pytesseract.Output.DICT)       
-            border_im = add_white_bg(warp_roi, 100)
             coords = reader.readtext(border_im)
             # final_test = pytesseract.image_to_data(warp_roi, config=custom_config, output_type=pytesseract.Output.DICT)
 
@@ -139,10 +139,9 @@ def get_coordinates(img_path, filt, hths, wths, slant):
 
     height, width, channels = im.shape
     print(height, width)
-    min = 3
-    eocr_pred_set = easyocr_text_pred(im, min, hths, wths)
+    eocr_pred_set = easyocr_text_pred(im, hths, wths)
     coords_eocr = recons_eocr_coords(eocr_pred_set, width, height)
-    # draw_eocr_boxes(coords_eocr, im)
+    # draw_ocr_boxes(coords_eocr, im)
     filt_img = run_filter(im, filt)
     final_coords = check_angle(coords_eocr, filt_img, slant, height, width)
 

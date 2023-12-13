@@ -4,16 +4,17 @@ import numpy as np
 import cv2
 import pytesseract
 import easyocr
-from util import draw_eocr_boxes, add_white_bg, grayscale, binthres, otsu
+from util import draw_ocr_boxes, add_white_bg, grayscale, binthres, otsu, rescale
 
 # global vars
 pytesseract.pytesseract.tesseract_cmd = r'C:\Users\Kelly\AppData\Local\Programs\Tesseract-OCR\tesseract.exe'
 
 # returns bounding boxes and text predictions from EasyOCR
-def easyocr_text_pred(img, min, hths, wths):
+def easyocr_text_pred(img, hths, wths):
     reader = easyocr.Reader(['en'])
-    coords = reader.readtext(img, min_size=min, canvas_size=3840, 
-                             rotation_info=[90], height_ths=hths, width_ths=wths)
+    coords = reader.readtext(img, canvas_size=3840, 
+                             height_ths=hths, width_ths=wths)
+
     return coords
 
 def check_bounds(coord, bound):
@@ -29,9 +30,6 @@ def recons_eocr_coords(coordinates, width, height):
                      check_bounds(coord[1], height)] 
                     for coord in coords], dtype=int))
     return reconstruct
-
-def rescale(img, fx, fy):
-    return cv2.resize(img, None, fx=fx, fy=fy, interpolation = cv2.INTER_CUBIC)
 
 def order_points(rectangle_coords):
     if isinstance(rectangle_coords, np.ndarray):
@@ -106,7 +104,6 @@ def check_angle(coordinates, img, slant, scale):
     for box in coordinates:
         if abs(box[0][0] - box[3][0]) < slant:
             roi = img[box[0][1]:box[2][1], box[0][0]:box[1][0]]
-            print(roi)
             if np.any(roi):
                 roi_list = transform_roi(roi)
                 results = tesseract_ocr(roi_list)
@@ -131,6 +128,7 @@ def check_angle(coordinates, img, slant, scale):
             conf_scores = [result['conf'][-1] for result in results]
             index = conf_scores.index(max(conf_scores)) # finding the max confidence score of tesseract results
             border_im = add_white_bg(warped_rois[0], 100) # extending the border of the ROI
+            cv2.imwrite("roi-extended.jpg", border_im)
             coords = reader.readtext(border_im) # EasyOCR applied on just the ROI
 
             if coords: # EasyOCR often detects the lack of text better than Tesseract
@@ -155,7 +153,6 @@ def run_filter(img, filt):
 #     height, width = image.shape
 
 def get_coordinates(img_path, filt, hths, wths, slant):
-    min = 5
     scale = 2
 
     im = cv2.imread(img_path)
@@ -163,9 +160,9 @@ def get_coordinates(img_path, filt, hths, wths, slant):
     filt_img = run_filter(im, filt)
     height, width, _ = im.shape
 
-    eocr_pred_set = easyocr_text_pred(filt_img, min, hths, wths)
+    eocr_pred_set = easyocr_text_pred(filt_img, hths, wths)
     coords_eocr = recons_eocr_coords(eocr_pred_set, width, height)
-    # draw_eocr_boxes(coords_eocr, im)
+    draw_ocr_boxes(coords_eocr, im)
 
     final_coords = check_angle(coords_eocr, filt_img, slant, scale)    
 
